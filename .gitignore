@@ -1,0 +1,22 @@
+# Dependências
+node_modules/
+
+# Builds
+dist/
+build/
+
+# Ambiente
+.env
+.env.local
+
+# Banco de dados (Docker)
+backend/database/loja_mysql_data/
+
+# Logs
+npm-debug.log*
+*.log
+
+# Editor / SO
+.vscode/
+.idea/
+.DS_Store

@@ -1,0 +1,38 @@
+# Banco de dados da loja (MySQL), isolado dentro do backend.
+# Uso: dentro de backend/database, rode `docker compose up -d`
+version: "3.9"
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: loja_mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: loja_db
+      MYSQL_ROOT_PASSWORD: root
+      # Usuário de aplicação opcional (além do root)
+      MYSQL_USER: loja_user
+      MYSQL_PASSWORD: loja_pass
+    ports:
+      - "3306:3306"
+    volumes:
+      - loja_mysql_data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # Interface web opcional para visualizar o banco (http://localhost:8080)
+  adminer:
+    image: adminer:latest
+    container_name: loja_adminer
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mysql
+
+volumes:
+  loja_mysql_data:

@@ -1,0 +1,27 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply bg-base text-ink font-body antialiased;
+}
+
+::selection {
+  @apply bg-accent text-base;
+}
+
+.container-page {
+  @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+}
+
+.btn-primary {
+  @apply inline-flex items-center justify-center gap-2 bg-accent text-base font-semibold px-5 py-3 rounded-sm hover:bg-accent-dark transition-colors;
+}
+
+.btn-outline {
+  @apply inline-flex items-center justify-center gap-2 border border-base-border text-ink px-5 py-3 rounded-sm hover:border-accent hover:text-accent transition-colors;
+}
+
+.input-field {
+  @apply w-full bg-base-surface border border-base-border rounded-sm px-4 py-3 text-ink placeholder:text-ink-muted focus:outline-none focus:border-accent transition-colors;
+}
