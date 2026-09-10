@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { api, Product, Category, formatPrice } from "../../api/client";
 
+const MAX_IMAGES = 5;
+
 const emptyForm = {
   name: "",
   description: "",
@@ -18,6 +20,8 @@ export default function AdminProducts() {
   const [form, setForm] = useState(emptyForm);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [imageError, setImageError] = useState("");
 
   async function load() {
     const [p, c] = await Promise.all([api.get("/products?limit=100"), api.get("/categories")]);
@@ -46,10 +50,52 @@ export default function AdminProducts() {
   function resetForm() {
     setEditingId(null);
     setForm(emptyForm);
+    setImageError("");
+  }
+
+  async function handleFilesSelected(e: React.ChangeEvent<HTMLInputElement>) {
+    const files = Array.from(e.target.files || []);
+    e.target.value = ""; // permite selecionar o mesmo arquivo de novo depois
+    if (files.length === 0) return;
+
+    const remaining = MAX_IMAGES - form.images.length;
+    if (remaining <= 0) {
+      setImageError(`Você já tem ${MAX_IMAGES} fotos. Remova alguma para adicionar outra.`);
+      return;
+    }
+
+    const toUpload = files.slice(0, remaining);
+    if (files.length > remaining) {
+      setImageError(`Só dá pra adicionar mais ${remaining} foto(s) (máximo ${MAX_IMAGES}). As demais foram ignoradas.`);
+    } else {
+      setImageError("");
+    }
+
+    const formData = new FormData();
+    toUpload.forEach((file) => formData.append("images", file));
+
+    setUploading(true);
+    try {
+      const { data } = await api.post("/uploads", formData);
+      setForm((f) => ({ ...f, images: [...f.images, ...data.urls] }));
+    } catch (err: any) {
+      setImageError(err?.response?.data?.message || "Falha ao enviar as imagens.");
+    } finally {
+      setUploading(false);
+    }
+  }
+
+  function removeImage(index: number) {
+    setForm((f) => ({ ...f, images: f.images.filter((_, i) => i !== index) }));
+    setImageError("");
   }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (form.images.length === 0) {
+      setImageError("Adicione pelo menos 1 foto do produto.");
+      return;
+    }
     setSaving(true);
     try {
       if (editingId) {
@@ -108,12 +154,46 @@ export default function AdminProducts() {
           value={form.stock}
           onChange={(e) => setForm({ ...form, stock: Number(e.target.value) })}
         />
-        <input
-          placeholder="URL da imagem (opcional)"
-          className="input-field"
-          value={form.images[0] || ""}
-          onChange={(e) => setForm({ ...form, images: e.target.value ? [e.target.value] : [] })}
-        />
+        <div className="sm:col-span-2">
+          <p className="text-sm text-ink-muted mb-2">
+            Fotos do produto ({form.images.length}/{MAX_IMAGES}) — envie de 1 a {MAX_IMAGES}, JPG/PNG/WEBP até 5MB cada
+          </p>
+          <div className="flex flex-wrap gap-3">
+            {form.images.map((url, i) => (
+              <div key={url + i} className="relative w-20 h-20 rounded-sm overflow-hidden border border-base-border group">
+                <img src={url} alt={`Foto ${i + 1}`} className="w-full h-full object-cover" />
+                <button
+                  type="button"
+                  onClick={() => removeImage(i)}
+                  aria-label="Remover foto"
+                  className="absolute top-0.5 right-0.5 w-5 h-5 rounded-full bg-black/70 text-white text-xs flex items-center justify-center hover:bg-sale transition-colors"
+                >
+                  ×
+                </button>
+                {i === 0 && (
+                  <span className="absolute bottom-0 left-0 right-0 bg-black/70 text-white text-[9px] text-center py-0.5">
+                    capa
+                  </span>
+                )}
+              </div>
+            ))}
+
+            {form.images.length < MAX_IMAGES && (
+              <label className="w-20 h-20 rounded-sm border border-dashed border-base-border hover:border-accent flex items-center justify-center text-ink-muted hover:text-accent text-xs cursor-pointer transition-colors text-center px-1">
+                {uploading ? "Enviando..." : "+ Adicionar"}
+                <input
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp,image/gif"
+                  multiple
+                  disabled={uploading}
+                  onChange={handleFilesSelected}
+                  className="hidden"
+                />
+              </label>
+            )}
+          </div>
+          {imageError && <p className="text-sale text-xs mt-2">{imageError}</p>}
+        </div>
         <textarea
           placeholder="Descrição"
           className="input-field sm:col-span-2"
