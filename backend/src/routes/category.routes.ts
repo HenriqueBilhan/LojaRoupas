@@ -35,8 +35,14 @@ router.post("/", requireAuth, requireAdmin, async (req, res) => {
     parentId: parentId || undefined,
     sortOrder: sortOrder || 0,
   });
-  await repo.save(category);
-  res.status(201).json(category);
+
+  try {
+    await repo.save(category);
+    res.status(201).json(category);
+  } catch (err) {
+    console.error(err);
+    res.status(400).json({ message: "Não foi possível criar a categoria. Talvez já exista uma com esse nome." });
+  }
 });
 
 router.put("/:id", requireAuth, requireAdmin, async (req, res) => {
@@ -51,11 +57,16 @@ router.put("/:id", requireAuth, requireAdmin, async (req, res) => {
   }
   if (description !== undefined) category.description = description;
   if (imageUrl !== undefined) category.imageUrl = imageUrl;
-  if (parentId !== undefined) category.parentId = parentId;
+  if (parentId !== undefined) category.parentId = parentId || undefined; // "" não é um id válido
   if (sortOrder !== undefined) category.sortOrder = sortOrder;
 
-  await repo.save(category);
-  res.json(category);
+  try {
+    await repo.save(category);
+    res.json(category);
+  } catch (err) {
+    console.error(err);
+    res.status(400).json({ message: "Não foi possível salvar a categoria. Talvez já exista uma com esse nome." });
+  }
 });
 
 router.delete("/:id", requireAuth, requireAdmin, async (req, res) => {

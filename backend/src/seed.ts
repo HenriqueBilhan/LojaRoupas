@@ -36,15 +36,49 @@ async function seed() {
   }
 
   // 2) Categorias
+  // As imageUrl abaixo são fotos de banco (Unsplash) só pra loja não ficar sem foto —
+  // troque pelas fotos reais dos produtos em Painel admin > Categorias quando quiser.
   const categoriesData = [
-    { name: "Camisetas", description: "Camisetas premium, oversized e básicas" },
-    { name: "Calças", description: "Jeans, cargo e moletom" },
-    { name: "Tênis", description: "Os tênis mais desejados do streetwear" },
-    { name: "Shorts", description: "Shorts tactel, moletom e cargo" },
-    { name: "Moletons", description: "Moletons canguru, careca e ziper" },
-    { name: "Bonés", description: "Bonés e acessórios pra completar o fit" },
-    { name: "Conjuntos", description: "Conjuntos completos moletom e verão" },
-    { name: "Acessórios", description: "Óculos, correntes, bolsas e mais" },
+    {
+      name: "Camisetas",
+      description: "Camisetas premium, oversized e básicas",
+      imageUrl: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=600&q=70",
+    },
+    {
+      name: "Calças",
+      description: "Jeans, cargo e moletom",
+      imageUrl: "https://images.unsplash.com/photo-1515459961680-58264ee27219?auto=format&fit=crop&w=600&q=70",
+    },
+    {
+      name: "Tênis",
+      description: "Os tênis mais desejados do streetwear",
+      imageUrl: "https://images.unsplash.com/photo-1676379827610-c380c52db0c6?auto=format&fit=crop&w=600&q=70",
+    },
+    {
+      name: "Shorts",
+      description: "Shorts tactel, moletom e cargo",
+      imageUrl: "https://images.unsplash.com/photo-1558631098-8235a5cd982c?auto=format&fit=crop&w=600&q=70",
+    },
+    {
+      name: "Moletons",
+      description: "Moletons canguru, careca e ziper",
+      imageUrl: "https://images.unsplash.com/photo-1587930658880-481927aafb00?auto=format&fit=crop&w=600&q=70",
+    },
+    {
+      name: "Bonés",
+      description: "Bonés e acessórios pra completar o fit",
+      imageUrl: "https://images.unsplash.com/photo-1691256676359-20e5c6d4bc92?auto=format&fit=crop&w=600&q=70",
+    },
+    {
+      name: "Conjuntos",
+      description: "Conjuntos completos moletom e verão",
+      imageUrl: "https://images.unsplash.com/photo-1522897355400-c4fdec73d979?auto=format&fit=crop&w=600&q=70",
+    },
+    {
+      name: "Acessórios",
+      description: "Óculos, correntes, bolsas e mais",
+      imageUrl: "https://images.unsplash.com/photo-1563122833-352e87c29410?auto=format&fit=crop&w=600&q=70",
+    },
   ];
 
   const categories: Record<string, Category> = {};
@@ -55,8 +89,13 @@ async function seed() {
         name: c.name,
         slug: slugify(c.name),
         description: c.description,
+        imageUrl: c.imageUrl,
         sortOrder: i,
       });
+      await categoryRepo.save(cat);
+    } else if (!cat.imageUrl) {
+      // Categoria já existia de um seed anterior (sem foto) — completa com a foto padrão
+      cat.imageUrl = c.imageUrl;
       await categoryRepo.save(cat);
     }
     categories[c.name] = cat;

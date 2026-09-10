@@ -5,7 +5,6 @@ import { ProductVariant } from "../entities/ProductVariant";
 import { Category } from "../entities/Category";
 import { requireAuth, requireAdmin } from "../middleware/auth";
 import { slugify } from "../utils/slugify";
-import { Like } from "typeorm";
 
 const router = Router();
 
@@ -24,7 +23,8 @@ router.get("/", async (req, res) => {
     qb.andWhere("category.slug = :category", { category });
   }
   if (search) {
-    qb.andWhere("product.name ILIKE :search", { search: `%${search}%` });
+    // MySQL não tem ILIKE (isso é sintaxe do Postgres) — LOWER()+LIKE faz a busca case-insensitive
+    qb.andWhere("LOWER(product.name) LIKE LOWER(:search)", { search: `%${search}%` });
   }
   if (featured === "true") {
     qb.andWhere("product.isFeatured = true");
@@ -35,8 +35,13 @@ router.get("/", async (req, res) => {
 
   qb.orderBy("product.createdAt", "DESC").skip(skip).take(take);
 
-  const [items, total] = await qb.getManyAndCount();
-  res.json({ items, total, page: Number(page), limit: take });
+  try {
+    const [items, total] = await qb.getManyAndCount();
+    res.json({ items, total, page: Number(page), limit: take });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Erro ao buscar produtos." });
+  }
 });
 
 router.get("/:slug", async (req, res) => {
@@ -77,15 +82,20 @@ router.post("/", requireAuth, requireAdmin, async (req, res) => {
     comparePriceCents,
     images: images || [],
     stock: stock || 0,
-    categoryId,
+    categoryId: categoryId || undefined, // "" (nenhuma categoria selecionada) não é um id válido
     isFeatured: !!isFeatured,
     variants: (variants || []).map((v: any) =>
       Object.assign(new ProductVariant(), { size: v.size, color: v.color, stock: v.stock || 0, sku: v.sku })
     ),
   });
 
-  await repo.save(product);
-  res.status(201).json(product);
+  try {
+    await repo.save(product);
+    res.status(201).json(product);
+  } catch (err) {
+    console.error(err);
+    res.status(400).json({ message: "Não foi possível criar o produto. Verifique os dados enviados." });
+  }
 });
 
 router.put("/:id", requireAuth, requireAdmin, async (req, res) => {
@@ -113,12 +123,17 @@ router.put("/:id", requireAuth, requireAdmin, async (req, res) => {
   if (comparePriceCents !== undefined) product.comparePriceCents = comparePriceCents;
   if (images !== undefined) product.images = images;
   if (stock !== undefined) product.stock = stock;
-  if (categoryId !== undefined) product.categoryId = categoryId;
+  if (categoryId !== undefined) product.categoryId = categoryId || undefined; // "" não é um id válido
   if (isFeatured !== undefined) product.isFeatured = isFeatured;
   if (isActive !== undefined) product.isActive = isActive;
 
-  await repo.save(product);
-  res.json(product);
+  try {
+    await repo.save(product);
+    res.json(product);
+  } catch (err) {
+    console.error(err);
+    res.status(400).json({ message: "Não foi possível salvar o produto. Verifique os dados enviados." });
+  }
 });
 
 router.delete("/:id", requireAuth, requireAdmin, async (req, res) => {

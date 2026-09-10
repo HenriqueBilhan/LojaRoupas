@@ -1,3 +1,7 @@
 node_modules/
 dist/
 .env
+
+# Fotos enviadas via upload (painel admin) — não versionar os arquivos, só a pasta
+uploads/*
+!uploads/.gitkeep

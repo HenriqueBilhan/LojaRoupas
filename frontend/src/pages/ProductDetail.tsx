@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { api, Product, formatPrice } from "../api/client";
 import { useAuth } from "../context/AuthContext";
 import { useCart } from "../context/CartContext";
+import ProductGallery from "../components/ProductGallery";
 
 export default function ProductDetail() {
   const { slug } = useParams();
@@ -49,13 +50,7 @@ export default function ProductDetail() {
 
   return (
     <div className="container-page py-10 grid lg:grid-cols-2 gap-10">
-      <div className="aspect-[4/5] bg-base-surface border border-base-border rounded-sm flex items-center justify-center overflow-hidden">
-        {product.images?.[0] ? (
-          <img src={product.images[0]} alt={product.name} className="w-full h-full object-cover" />
-        ) : (
-          <span className="text-ink-muted px-8 text-center">{product.name}</span>
-        )}
-      </div>
+      <ProductGallery images={product.images} name={product.name} />
 
       <div>
         <p className="text-xs text-ink-muted uppercase tracking-wide mb-2">
