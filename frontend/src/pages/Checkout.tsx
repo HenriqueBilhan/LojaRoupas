@@ -1,7 +1,9 @@
-import { useState } from "react";
+import axios from "axios";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { api, formatPrice } from "../api/client";
 import { useCart } from "../context/CartContext";
+import { fetchAddressByCep } from "../services/viacep";
 
 export default function Checkout() {
   const { items, totalCents, refresh } = useCart();
@@ -19,10 +21,51 @@ export default function Checkout() {
     state: "",
   });
   const [paymentMethod, setPaymentMethod] = useState("pix");
+  const [cepLoading, setCepLoading] = useState(false);
+  const [cepError, setCepError] = useState("");
 
   function updateField(field: string, value: string) {
     setForm((f) => ({ ...f, [field]: value }));
   }
+
+  useEffect(() => {
+    const digits = form.zipCode.replace(/\D/g, "");
+    if (digits.length !== 8) {
+      setCepError("");
+      return;
+    }
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(async () => {
+      setCepLoading(true);
+      setCepError("");
+      try {
+        const address = await fetchAddressByCep(digits, controller.signal);
+        if (!address) {
+          setCepError("CEP não encontrado. Preencha o endereço manualmente.");
+          return;
+        }
+        setForm((f) => ({
+          ...f,
+          street: address.logradouro,
+          neighborhood: address.bairro,
+          city: address.localidade,
+          state: address.uf,
+        }));
+      } catch (err: any) {
+        if (axios.isCancel(err) || err?.code === "ERR_CANCELED") return;
+        setCepError("Não foi possível buscar o CEP. Preencha manualmente.");
+      } finally {
+        setCepLoading(false);
+      }
+    }, 500);
+
+    return () => {
+      clearTimeout(timeoutId);
+      controller.abort();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [form.zipCode]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -55,6 +98,8 @@ export default function Checkout() {
           <input required placeholder="CEP" className="input-field" value={form.zipCode} onChange={(e) => updateField("zipCode", e.target.value)} />
           <input required placeholder="Número" className="input-field" value={form.number} onChange={(e) => updateField("number", e.target.value)} />
         </div>
+        {cepLoading && <p className="text-ink-muted text-xs">Buscando endereço...</p>}
+        {cepError && <p className="text-sale text-xs">{cepError}</p>}
         <input required placeholder="Rua" className="input-field" value={form.street} onChange={(e) => updateField("street", e.target.value)} />
         <input placeholder="Complemento (opcional)" className="input-field" value={form.complement} onChange={(e) => updateField("complement", e.target.value)} />
         <input required placeholder="Bairro" className="input-field" value={form.neighborhood} onChange={(e) => updateField("neighborhood", e.target.value)} />
