@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import Logo from "./Logo";
 import { Truck, CreditCard, RefreshCcw, MessageCircle, Mail, Phone } from "lucide-react";
 
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3333/api";
+
 const FEATURES = [
   {
     icon: Truck,
@@ -115,7 +117,7 @@ export default function Footer() {
           </p>
           <div className="flex items-center gap-3">
             <a
-              href="#"
+              href="https://www.instagram.com/jordanwearstore/"
               target="_blank"
               rel="noreferrer"
               aria-label="Instagram da JW Store"
@@ -123,16 +125,14 @@ export default function Footer() {
             >
               <InstagramIcon width={20} height={20} />
             </a>
-
             <a
-              href="#"
+              href={`${API_URL}/go/tiktok`}
               target="_blank"
               rel="noreferrer"
               aria-label="TikTok da JW Store"
               className="text-ink-muted hover:text-accent transition-colors"
             >
               <TikTokIcon width={20} height={20} />
-              
             </a>
           </div>
         </div>
@@ -143,14 +143,14 @@ export default function Footer() {
             <li>Segunda à Sábado, 9h às 18h</li>
             <li className="flex items-center gap-2">
               <Phone size={14} />
-              <a href="https://wa.me/555181875780" target="_blank" rel="noreferrer" className="hover:text-accent transition-colors">
-                55 518187-5780
+              <a href="https://wa.me/5551995214307" target="_blank" rel="noreferrer" className="hover:text-accent transition-colors">
+                51 99521-4307
               </a>
             </li>
             <li className="flex items-center gap-2">
               <Mail size={14} />
-              <a href="mailto:wearstorejordan@gmail.com" className="hover:text-accent transition-colors">
-                wearstorejordan@gmail.com
+              <a href="mailto:contato@jwstore.com.br" className="hover:text-accent transition-colors">
+                contato@jwstore.com.br
               </a>
             </li>
           </ul>
