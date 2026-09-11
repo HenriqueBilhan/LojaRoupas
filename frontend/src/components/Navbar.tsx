@@ -12,6 +12,7 @@ const CATEGORIES = [
   { name: "Moletons", slug: "moletons" },
   { name: "Bonés", slug: "bones" },
   { name: "Conjuntos", slug: "conjuntos" },
+  {name: "Chinelos", slug: "chinelos"},
 ];
 
 export default function Navbar() {
