@@ -91,7 +91,7 @@ export default function ExchangePolicy() {
           <li>
             WhatsApp:{" "}
             <a
-              href="https://wa.me/5551995214307"
+              href="https://wa.me/555181875780"
               target="_blank"
               rel="noreferrer"
               className="text-accent hover:underline"
