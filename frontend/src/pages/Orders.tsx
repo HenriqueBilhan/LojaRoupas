@@ -9,6 +9,9 @@ const STATUS_LABELS: Record<string, string> = {
   canceled: "Cancelado",
 };
 
+// Só pode cancelar enquanto o pedido ainda não foi enviado/entregue
+const CANCELABLE_STATUSES = ["pending", "paid"];
+
 interface OrderItem {
   id: string;
   productName: string;
@@ -28,13 +31,33 @@ interface OrderData {
 export default function Orders() {
   const [orders, setOrders] = useState<OrderData[]>([]);
   const [loading, setLoading] = useState(true);
+  const [cancelingId, setCancelingId] = useState<string | null>(null);
 
-  useEffect(() => {
+  function load() {
+    setLoading(true);
     api
       .get("/orders/my")
       .then((r) => setOrders(r.data))
       .finally(() => setLoading(false));
+  }
+
+  useEffect(() => {
+    load();
   }, []);
+
+  async function handleCancel(orderId: string) {
+    if (!window.confirm("Tem certeza que deseja cancelar este pedido?")) return;
+    setCancelingId(orderId);
+    try {
+      await api.put(`/orders/${orderId}/cancel`);
+      // Remove o pedido cancelado da lista imediatamente
+      setOrders((prev) => prev.filter((o) => o.id !== orderId));
+    } catch (err: any) {
+      alert(err?.response?.data?.message || "Não foi possível cancelar o pedido.");
+    } finally {
+      setCancelingId(null);
+    }
+  }
 
   return (
     <div className="container-page py-10">
@@ -66,7 +89,18 @@ export default function Orders() {
                   </p>
                 ))}
               </div>
-              <p className="font-semibold">{formatPrice(order.totalCents)}</p>
+              <div className="flex items-center justify-between gap-3">
+                <p className="font-semibold">{formatPrice(order.totalCents)}</p>
+                {CANCELABLE_STATUSES.includes(order.status) && (
+                  <button
+                    onClick={() => handleCancel(order.id)}
+                    disabled={cancelingId === order.id}
+                    className="text-xs font-semibold text-red-600 border border-red-600 rounded-full px-3 py-1 hover:bg-red-600 hover:text-white transition-colors disabled:opacity-50"
+                  >
+                    {cancelingId === order.id ? "Cancelando..." : "Cancelar pedido"}
+                  </button>
+                )}
+              </div>
             </div>
           ))}
         </div>
