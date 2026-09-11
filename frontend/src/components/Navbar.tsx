@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import Logo from "./Logo";
 import { useAuth } from "../context/AuthContext";
 import { useCart } from "../context/CartContext";
-
+import { ShoppingCart } from "lucide-react";
 const CATEGORIES = [
   { name: "Camisetas", slug: "camisetas" },
   { name: "Calças", slug: "calcas" },
@@ -88,14 +88,19 @@ export default function Navbar() {
             </Link>
           )}
 
-          <Link to="/carrinho" className="relative hover:text-accent transition-colors">
-            Carrinho
-            {count > 0 && (
-              <span className="absolute -top-2 -right-3 bg-accent text-base text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
-                {count}
-              </span>
-            )}
-          </Link>
+         <Link
+  to="/carrinho"
+  className="relative flex items-center gap-2 hover:text-accent transition-colors"
+>
+  <ShoppingCart size={21} />
+  <span>Carrinho</span>
+
+  {count > 0 && (
+    <span className="absolute -top-2 left-3 bg-accent text-base text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
+      {count}
+    </span>
+  )}
+</Link>
         </div>
       </div>
 
