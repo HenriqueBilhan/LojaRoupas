@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import Logo from "./Logo";
 
 export default function Footer() {
@@ -25,8 +26,21 @@ export default function Footer() {
         <div>
           <h4 className="text-sm font-semibold mb-3">Políticas</h4>
           <ul className="text-sm text-ink-muted space-y-2">
-            <li>Política de reembolso</li>
-            <li>Trocas e devoluções</li>
+            <li>
+              <Link to="/politica-de-trocas-e-devolucoes" className="hover:text-accent transition-colors">
+                Política de reembolso
+              </Link>
+            </li>
+            <li>
+              <Link to="/politica-de-trocas-e-devolucoes" className="hover:text-accent transition-colors">
+                Trocas e devoluções
+              </Link>
+            </li>
+            <li>
+              <Link to="/politica-de-privacidade" className="hover:text-accent transition-colors">
+                Política de Privacidade
+              </Link>
+            </li>
             <li>Política de frete</li>
             <li>Termos de serviço</li>
           </ul>
