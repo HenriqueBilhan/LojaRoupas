@@ -12,6 +12,8 @@ import Checkout from "./pages/Checkout";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Orders from "./pages/Orders";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import ExchangePolicy from "./pages/ExchangePolicy";
 
 import AdminLayout from "./pages/admin/AdminLayout";
 import Dashboard from "./pages/admin/Dashboard";
@@ -81,6 +83,22 @@ export default function App() {
               element={
                 <Layout>
                   <Register />
+                </Layout>
+              }
+            />
+            <Route
+              path="/politica-de-privacidade"
+              element={
+                <Layout>
+                  <PrivacyPolicy />
+                </Layout>
+              }
+            />
+            <Route
+              path="/politica-de-trocas-e-devolucoes"
+              element={
+                <Layout>
+                  <ExchangePolicy />
                 </Layout>
               }
             />
