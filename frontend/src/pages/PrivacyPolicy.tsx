@@ -92,18 +92,18 @@ export default function PrivacyPolicy() {
           <li>
             WhatsApp:{" "}
             <a
-              href="https://wa.me/5551995214307"
+              href="https://wa.me/555181875780"
               target="_blank"
               rel="noreferrer"
               className="text-accent hover:underline"
             >
-              51 99521-4307
+              51 8187-5780
             </a>
           </li>
           <li>
             E-mail:{" "}
-            <a href="mailto:2kkconcept@gmail.com" className="text-accent hover:underline">
-              2kkconcept@gmail.com
+            <a href="mailto:wearstorejordan@gmail.com" className="text-accent hover:underline">
+              wearstorejordan@gmail.com
             </a>
           </li>
         </ul>
