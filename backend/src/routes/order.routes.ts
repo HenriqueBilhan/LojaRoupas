@@ -1,10 +1,14 @@
 import { Router } from "express";
+import { Not } from "typeorm";
 import { AppDataSource } from "../data-source";
 import { Order, OrderStatus } from "../entities/Order";
 import { OrderItem } from "../entities/OrderItem";
 import { CartItem } from "../entities/CartItem";
 import { Product } from "../entities/Product";
 import { requireAuth, requireAdmin, AuthRequest } from "../middleware/auth";
+
+// Status a partir dos quais o pedido ainda pode ser cancelado pelo cliente
+const CANCELABLE_STATUSES = [OrderStatus.PENDING, OrderStatus.PAID];
 
 const router = Router();
 
@@ -57,15 +61,34 @@ router.post("/", async (req: AuthRequest, res) => {
   res.status(201).json(order);
 });
 
-// Lista os pedidos do próprio usuário
+// Lista os pedidos do próprio usuário (pedidos cancelados não aparecem mais aqui)
 router.get("/my", async (req: AuthRequest, res) => {
   const orderRepo = AppDataSource.getRepository(Order);
   const orders = await orderRepo.find({
-    where: { userId: req.user!.userId },
+    where: { userId: req.user!.userId, status: Not(OrderStatus.CANCELED) },
     relations: ["items"],
     order: { createdAt: "DESC" },
   });
   res.json(orders);
+});
+
+// Cliente cancela o próprio pedido (some da lista "Meus Pedidos" em seguida)
+router.put("/:id/cancel", async (req: AuthRequest, res) => {
+  const orderRepo = AppDataSource.getRepository(Order);
+  const order = await orderRepo.findOne({ where: { id: req.params.id } });
+  if (!order) return res.status(404).json({ message: "Pedido não encontrado." });
+
+  if (order.userId !== req.user!.userId && req.user!.role !== "admin") {
+    return res.status(403).json({ message: "Acesso negado." });
+  }
+
+  if (!CANCELABLE_STATUSES.includes(order.status)) {
+    return res.status(400).json({ message: "Este pedido não pode mais ser cancelado." });
+  }
+
+  order.status = OrderStatus.CANCELED;
+  await orderRepo.save(order);
+  res.json(order);
 });
 
 router.get("/:id", async (req: AuthRequest, res) => {
@@ -80,9 +103,14 @@ router.get("/:id", async (req: AuthRequest, res) => {
 
 // --- Rotas de administrador ---
 
+// Lista todos os pedidos (pedidos cancelados não aparecem mais na lista de "Pedidos")
 router.get("/", requireAdmin, async (_req, res) => {
   const orderRepo = AppDataSource.getRepository(Order);
-  const orders = await orderRepo.find({ relations: ["items", "user"], order: { createdAt: "DESC" } });
+  const orders = await orderRepo.find({
+    where: { status: Not(OrderStatus.CANCELED) },
+    relations: ["items", "user"],
+    order: { createdAt: "DESC" },
+  });
   res.json(orders);
 });
 
