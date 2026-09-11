@@ -31,6 +31,12 @@ app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 
 app.get("/health", (_req, res) => res.json({ status: "ok" }));
 
+// Redirects de redes sociais: o link real fica só aqui no backend,
+// o frontend sempre aponta para /api/go/<rede> e nunca mostra a URL final.
+app.get("/api/go/tiktok", (_req, res) => {
+  res.redirect(302, "https://www.tiktok.com/@jordanwearstore");
+});
+
 app.use("/api/auth", authRoutes);
 app.use("/api/categories", categoryRoutes);
 app.use("/api/products", productRoutes);

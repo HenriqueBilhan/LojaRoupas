@@ -123,6 +123,7 @@ export default function Footer() {
             >
               <InstagramIcon width={20} height={20} />
             </a>
+
             <a
               href="#"
               target="_blank"
@@ -131,6 +132,7 @@ export default function Footer() {
               className="text-ink-muted hover:text-accent transition-colors"
             >
               <TikTokIcon width={20} height={20} />
+              
             </a>
           </div>
         </div>
@@ -141,14 +143,14 @@ export default function Footer() {
             <li>Segunda à Sábado, 9h às 18h</li>
             <li className="flex items-center gap-2">
               <Phone size={14} />
-              <a href="https://wa.me/5551995214307" target="_blank" rel="noreferrer" className="hover:text-accent transition-colors">
-                51 99521-4307
+              <a href="https://wa.me/555181875780" target="_blank" rel="noreferrer" className="hover:text-accent transition-colors">
+                55 518187-5780
               </a>
             </li>
             <li className="flex items-center gap-2">
               <Mail size={14} />
-              <a href="mailto:contato@jwstore.com.br" className="hover:text-accent transition-colors">
-                contato@jwstore.com.br
+              <a href="mailto:wearstorejordan@gmail.com" className="hover:text-accent transition-colors">
+                wearstorejordan@gmail.com
               </a>
             </li>
           </ul>
