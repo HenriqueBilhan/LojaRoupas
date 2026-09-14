@@ -113,8 +113,7 @@ export default function Checkout() {
           <div className="flex gap-3">
             {[
               { id: "pix", label: "Pix" },
-              { id: "credit_card", label: "Cartão" },
-              { id: "boleto", label: "Boleto" },
+            
             ].map((opt) => (
               <button
                 type="button"

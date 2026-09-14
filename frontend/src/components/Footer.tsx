@@ -193,20 +193,7 @@ export default function Footer() {
         </div>
       </div>
 
-      {/* Pagamento, envio e copyright */}
-      <div className="border-t border-base-border">
-        <div className="container-page py-6 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-ink-muted">
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="font-semibold mr-1">Formas de pagamento:</span>
-            {["Visa", "Mastercard", "Elo", "Pix", "Boleto"].map((m) => (
-              <span key={m} className="border border-base-border rounded-sm px-2 py-1">
-                {m}
-              </span>
-            ))}
-          </div>
-          <p>© {new Date().getFullYear()} JW Store — Todos os direitos reservados.</p>
-        </div>
-      </div>
+     
     </footer>
   );
 }

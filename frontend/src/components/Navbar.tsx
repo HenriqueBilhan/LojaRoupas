@@ -52,9 +52,7 @@ export default function Navbar() {
               {c.name}
             </Link>
           ))}
-          <Link to="/politica-de-privacidade" className="hover:text-accent transition-colors">
-            Política de Privacidade
-          </Link>
+          
         </nav>
 
         <form onSubmit={handleSearch} className="hidden md:flex flex-1 max-w-sm ml-auto">

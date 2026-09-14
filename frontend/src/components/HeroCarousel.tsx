@@ -14,17 +14,17 @@ const SLIDES: Slide[] = [
   {
     image:
       "https://www.image2url.com/r2/default/images/1789066181503-8141d8a6-67a7-408f-bb8a-a9d78a7b6319.png",
-    eyebrow: "NOVA COLEÇÃO",
-    title: ["STREETWEAR", "SEM FILTRO"],
+    eyebrow: "REDES SOCIAIS",
+    title: ['JÁ NOS SEGUE NAS', 'REDES SOCIAIS?'],
     subtitle:
-      "Peças pensadas pra rua: conforto, atitude e aquele drip que ninguém tem igual. Envio rápido pra todo o Brasil.",
+      "Acompanhe a JW Store nas redes sociais e fique por dentro de todas as novidades, lançamentos, coleções e drops exclusivos. Descubra as tendências, confira nossas peças e faça parte da nossa comunidade.",
     primaryCta: {
-      label: "Ver produtos",
-      to: "/produtos",
+      label: "Instagram",
+      to: "https://www.instagram.com/jordanwearstore/",
     },
     secondaryCta: {
-      label: "Camisetas",
-      to: "/produtos?category=camisetas",
+      label: 'TikTok',
+      to: "https://www.tiktok.com/@jordanwearstore",
     },
   },
   {
